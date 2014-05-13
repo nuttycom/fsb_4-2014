@@ -2,7 +2,7 @@
 
 [Kris Nuttycombe](http://github.com/nuttycom) -- [`@nuttycom`](http://twitter.com/nuttycom)
 
-April 19, 2014
+May 13, 2014
 
 ---------
 
@@ -10,15 +10,13 @@ April 19, 2014
 
 > "Let me take you on an adventure which will give you superpowers." --[`@bitemyapp`](https://twitter.com/bitemyapp/status/455464035987623936)
 
-<https://github.com/nuttycom/lambdaconf-2014-workshop>
+<https://github.com/nuttycom/startup_week-2014>
 
 <div class="notes">
 
-Trail of Awesome
+The First Form
 
-Perfect Programs
-
-Not on my board
+Not on my board / trail of awesome.
 
 Haskell and Scala
 
@@ -41,7 +39,28 @@ This program doesn't have any bugs.
 
 <div class="notes">
 
-This program has only a single possible result.
+This is a very simple program - a value interpreted by an interpreter.
+
+How the interpreter presents that value to the person running it can vary.
+
+Represents a single state.
+
+</div>
+
+<div class="fragment">
+
+~~~{.haskell }
+
+nuttycom@crash: ~ $ ghci
+GHCi, version 7.6.3: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+Prelude> True
+True
+  
+~~~
+
 
 </div>
 
@@ -53,10 +72,12 @@ This program has only a single possible result.
 
 data Bool = True | False
 
-bool :: Bool
+boolProgram :: Bool
 -- "::" is pronounced, "has type"
   
 ~~~
+
+How many states could boolProgram inhabit?
 
 <div class="fragment">
 
@@ -70,7 +91,7 @@ bool :: Bool
 
 ~~~{.haskell}
 
-i :: Int32
+intProgram :: Int32
   
 ~~~
 
@@ -82,7 +103,7 @@ This one is just awful...
 
 ~~~{.haskell}
 
-s :: String
+strProgram :: String
   
 ~~~
 
@@ -90,15 +111,30 @@ s :: String
 
 --------
 
+## Learn to Count
+
+~~~{.haskell}
+
+-- if haskell had unsafe type-level pattern matching... 
+inhabitants :: Type -> Nat
+
+inhabitants Bool = 2
+inhabitants Int32 = 2^32
+  
+~~~
+
+--------
+
 ## Learn to Add
 
 ~~~{.haskell}
 
+-- Maybe there's one of these...
 data Maybe a = Just a | Nothing
 
 inhabitants (Maybe a) = inhabitants a + 1
 
-
+-- Either there's one of these, or one of those...
 data Either a b = Left a | Right b
 
 inhabitants (Either a b) = inhabitants a + inhabitants b
@@ -109,28 +145,30 @@ Bool, Maybe and Either are called sum types for the obvious reason.
 
 --------
 
+## Learn to Multiply
+
 ~~~{.haskell}
 
 tuple :: (Bool, Int32)
   
 ~~~
 
-* 2^32^ inhabitants if the value on the left is True
-* 2^32^ inhabitants if it's False
+* `fst :: (a, b) -> a`
+    - `(fst tuple)` has 2 inhabitants
+<br/><br/>
+* `snd :: (a, b) -> b`
+    - 2^32^ inhabitants if `(fst tuple) == True`
+    - 2^32^ inhabitants if `(fst tuple) == False`
+<br/><br/>
+* 2 * 2^32^ = 2^33^
 
-* 2^32^ + 2^32^ = 2 * 2^32 = 2^33^
+With tuples, we always multiply.
 
 --------
 
 ## Learn to Multiply
 
 ~~~{.haskell}
-
--- if haskell had unsafe type-level pattern matching... 
-inhabitants :: Type -> Nat
-
-inhabitants Bool = 2
-inhabitants Int32 = 2^32
 
 inhabitants (a, b) = inhabitants a * inhabitants b
 inhabitants (Int32, Int32) = 2^32 * 2^32 = 2^64
@@ -140,27 +178,37 @@ inhabitants (Bool, Bool, Int32) = 2 * 2 * 2^32 = 2^34
   
 ~~~
 
-With tuples, we always multiply.
-
 We call these "product" types.
 
 --------
 
-2 + 2^32^ = 2 * 2^32 = 2^33^
+## Isomorphic Types
+
+These types have the same inhabitants.
 
 ~~~{.haskell}
 
-either :: Either Int32 Int32
--- 2^33 inhabitants
+-- expressed as a product
+tuple :: (Bool, Int32) -- 2^33 inhabitants
 
-tuple :: (Bool, Int32)
--- 2^33 inhabitants
+-- expressed as a sum
+either :: Either Int32 Int32 -- 2^33 inhabitants
   
 ~~~
 
-These types are isomorphic.
+Choose whichever one is most convenient
 
-Choose whichever one is most convenient.
+<div class="fragment">
+
+~~~{.haskell}
+
+eitherBoolOrInt :: Either Bool Int32 -- 2 + 2^32 inhabitants
+  
+~~~
+
+Either is more flexible
+
+</div>
 
 ---------
 
@@ -168,14 +216,14 @@ Choose whichever one is most convenient.
 
 ~~~{.haskell}
 
-inhabitants (Maybe Int32) = 2^32 + 1
+inhabitants (Either Bool Int32) = 2 + 2^32
   
 ~~~
 
 Most languages emphasize products.
 <br/><br/>
 
-Bad ones don't let you define a type <br/>with 2^32^ + 1 inhabitants easily.
+Bad ones don't let you define a type <br/>with 2 + 2^32^ inhabitants easily.
 
 <div class="notes">
 
@@ -224,13 +272,17 @@ public final class Right<A, B> implements Either<A, B> {
 
 --------
 
+> "Bug fixing strategy: forbid yourself to fix the bug. Instead, render 
+> the bug impossible by construction." 
+> --[Paul Phillips](https://twitter.com/extempore2/status/417366903209091073)
+
+--------
+
 # The Vampire Policy
 
 ![](./img/bela-lugosi.jpg)
 
-> "Bug fixing strategy: forbid yourself to fix the bug. Instead, render 
-> the bug impossible by construction." 
-> --[Paul Phillips](https://twitter.com/extempore2/status/417366903209091073)
+> Don't let him in.
 
 <div class="notes">
 
@@ -445,392 +497,4 @@ val program: EitherT[IO, DBErr, Unit] = for {
 
 --------
 
-# Side Effects
-
-![](./img/trapped.png)
-
-> in other words, what was that IO thingy?
-
-<div class="notes">
-
-What is IO?
-
-A value of type IO[String] represents some action that can be performed to return a String.
-
-IO is kind of like if you had only a single sensory organ.
-
-It tells you that there's something going on, but it's not very specific about what.
-
-You couldn't, for example, determine whether it was your hair or your hand that 
-was on fire. That sort of thing.
-
-We want to be more specific. Sum types give us a way to do that.
-
-</div>
-
---------
-
-## Managing Effects
-
-<div class="notes">
-
-Minimizing the number of inhabitants of our program includes minimizing side effects.
-
-We want to be specific.
-
-Sounds like a job for a sum type!
-
-</div>
-
-~~~{.scala}
-
-// def findDocument(key: DocKey): EitherT[IO, DBErr, Document] = ???
-// def storeWordCount(key: DocKey, wordCount: Long): EitherT[IO, DBErr, Unit] = ???
-
-sealed trait DocAction
-case class FindDocument(key: DocKey) extends DocAction
-case class StoreWordCount(key: DocKey, wordCount: Long) extends DocAction
-  
-~~~
-
-How can we build a program out of these actions?
-
---------
-
-## This?
-
-~~~{.scala}
-object DocAction {
-  type Program = List[DocAction]
-
-  def runProgram(actions: Program): IO[Unit] = ???
-}
-~~~
-
-* Obviously, this doesn't work.
-    - can't interleave pure computations
-    - no way to represent return values 
-    - can't produce a new DocAction from a Program 
-    - can't make later action a function of an earlier one
-<br/><br/>
-* But, it *is* conceptually related to what we want.
-    - a data structure an ordered sequence of actions
-    - an interpreter that evaluates this data structure 
-
--------
-
-## Sequencing
-
-Let's, see, what is good for sequencing effects?
-
-~~~{.scala}
-
-trait Monad[M[_]] {
-  def pure[A](a: => A): M[A]
-  def bind[A, B](ma: M[A])(f: A => M[B]): M[B]
-}
-  
-~~~
-
-* State threads state through a computation...
-* Reader gives the same inputs to all...
-* Writer keeps a log...
-* Not going to be Option, List, ...
-
---------
-
-## Requirements
-
-* **restrict** the client to only permit actions in our sum
-
-* produce later actions as a function of earlier ones
-
-* interleave pure computations with effectful 
-
-<div class="notes">
-
-Restate relationship of minimization of states to correctness.
-
-</div>
-
---------
-
-# Free
-
-~~~{.scala}
-
-sealed trait Free[F[_], A]
-case class Pure[F[_], A](a: A) extends Free[F, A]
-case class Bind[F[_], A, B](s: Free[F, A], f: A => Free[F, B]) extends Free[F, A]
-case class Suspend[F[_], A](s: F[Free[F, A]]) extends Free[F, A]
-  
-~~~
-
-> for a complete derivation of this type, see [Functional Programming In Scala](http://manning.com/bjarnason)
-
-**Exercise 1: Write the Monad instance for Free.**
-
-<div class="notes">
-
-This data structure will take the place of List in our broken Program type.
-
-Instead of walking through the derivation, I'm going to show you how to
-use it, and I think that through the process of using it it'll become obvious
-why it is useful for our purpose.
-
-</div>
-
---------
-
-## Solution
-
-~~~{.scala}
-
-object Free {
-  def monad[F[_]] = new Monad[({ type λ[α] = Free[F, α] })#λ] {
-    def pure[A](a: => A): Free[F, A] = Pure(a)
-
-    // def bind[A, B](ma: Free[F, A])(f: A => Free[F, B]): Free[F, B] = Bind(ma, f)
-
-    def bind[A, B](ma: Free[F, A])(f: A => Free[F, B]): Free[F, B] = ma match {
-      case Bind(ma0, f0) => bind(ma0) { a => Bind(f0(a), f) }
-      case other => Bind(other, f)
-    }
-  }
-}
-
-~~~
-
-<div class="notes">
-
-Back to our requirements.
-
-Need to chain together 
-
-</div>
-
---------
-
-## Capture The Rest of the Program
-
-Here's a little trick: store the rest of the program in each action.
-
-~~~{.scala}
-
-// sealed trait DocAction
-// case class FindDocument(key: DocKey) extends DocAction
-// case class StoreWordCount(key: DocKey, wordCount: Long) extends DocAction
-  
-sealed trait DocAction[A]
-case class FindDocument(key: DocKey, cont: Option[Document] => A) extends DocAction[A]
-case class StoreWordCount(key: DocKey, wordCount: Long, cont: () => A) extends DocAction[A]
-  
-~~~
-
-<div class="notes">
-
-This is an implementation detail, really, but it's a critical one. 
-
-Remember, a program is a *value* representing a sequence of operations for an
-interpreter to follow. So, capturing the rest of the program is just capturing
-that description - there's not a lot of overhead to it.
-
-Earlier, we used a list to represent this sequence, and a couple of slides back
-I introduced the Free data structure (which is itself a sum type) as the one
-we'd use to capture the sequence of operations. Let's do that now.
-
-</div>
-
---------
-
-## Write a Little Language
-
-~~~{.scala}
-
-sealed trait DocAction[A]
-
-object DocAction {
-  case class FindDocument[A] private[DocAction] (
-    key: DocKey, 
-    cont: Option[Document] => A
-    ) extends DocAction[A]
-
-  case class StoreWordCount[A] private[DocAction] (
-    key: DocKey, wordCount: Long, 
-    cont: () => A
-    ) extends DocAction[A]
-
-  type Program[A] = Free[DocAction, A]
-
-  def findDocument(key: DocKey): Program[Option[Document]] = 
-    Suspend(FindDocument(key, Pure(_)))
-
-  def storeWordCount(key: DocKey, wordCount: Long): Program[Unit] = 
-    Suspend(StoreWordCount(key, wordCount, () => Pure(())))
-}
-  
-~~~
-
-<div class="notes">
-
-Private constructors, no need to expose them.
-
-We now have a way to create programs, and we know in the abstract that 
-because Free has a Monad, that we can chain those programs together.
-
-So let's see what that looks like.
-
-</div>
-
---------
-
-# Write a Perfect Program!
-
-~~~{.scala}
-
-import DocAction._
-
-val program: Program[Unit] = for {
-  document <- findDocument(docKey)
-  _ <- document match {
-    case Some(d) => storeWordCount(docKey, countWords(d)) 
-    case None => Free.monad[DocAction].pure(())
-  }
-} yield ()
-  
-~~~~
-
-<div class="notes">
-
-While this looks like an effectful program, it's just chaining together calls to
-the Program constructors that we defined previously. So, all that we've done is built
-up a data structure, like our original List, but much more powerful!
-
-The next thing to do is interpret this data structure.
-
-</div>
-
---------
-
-## A Pure Interpreter
-
-~~~{.scala}
-
-type Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec def run[A](program: Program[A], memory: Memory): A = {
-  program match {
-    case Pure(a) => a
-
-    case Suspend(FindDocument(key, cont)) => ???
-
-    case Suspend(StoreWordCount(key, n, cont)) => ???
-
-    case Bind(s, f) => ???
-  }
-}
-
-~~~
-
---------
-
-## A Pure Interpreter #2
-
-~~~{.scala}
-
-type Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec def run[A](program: Program[A], memory: Memory): A = {
-  program match {
-    case Pure(a) => a
-
-    case Suspend(FindDocument(key, cont)) =>
-      run(cont(memory.get(key).map(_._1)), memory)
-
-    case Suspend(StoreWordCount(key, n, cont)) => ???
-
-    case Bind(s, f) => ???
-  }
-}
-
-~~~
-
---------
-
-## A Pure Interpreter #3
-
-~~~{.scala}
-
-type Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec def run[A](program: Program[A], memory: Memory): A = {
-  program match {
-    case Pure(a) => a
-
-    case Suspend(FindDocument(key, cont)) =>
-      run(cont(memory.get(key).map(_._1)), memory)
-
-    case Suspend(StoreWordCount(key, n, cont)) => ???
-      val newValue = memory.get(key).map(_.copy(_2 = Some(n)))
-      val newMemory = memory ++ newValue.map(key -> _)
-      run(cont(), newMemory)
-
-    case Bind(s, f) => ???
-  }
-}
-
-~~~
-
---------
-
-## A Pure Interpreter #4
-
-~~~{.scala}
-
-type Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec def run[A](program: Program[A], memory: Memory): A = {
-  program match {
-    case Pure(a) => a
-    case Suspend(FindDocument(key, cont)) => // implemented 
-    case Suspend(StoreWordCount(key, n, cont)) => //implemented
-
-    case Bind(s, f) => 
-      s match {
-        case Pure(a) => run(f(a), memory)
-
-        case Suspend(FindDocument(key, cont)) =>
-          run(Bind(cont(memory.get(key).map(_._1)), f), memory)
-
-        case Suspend(StoreWordCount(key, n, cont)) =>
-          val newValue = memory.get(key).map(_.copy(_2 = Some(n)))
-          val newMemory = memory ++ newValue.map(key -> _)
-          run(Bind(cont(), f), newMemory)
-
-        case Bind(s0, f0) =>
-          run(Bind(s0, (a: Any) => Bind(f0(a), f)), memory)
-      }
-  }
-}
-
-~~~
-
-**Exercise 2: Implement a pure interpreter for ASDF**
-
-<div class="notes">
-
-After this, we'll work on side-effecting interpreter.
-
-</div>
-
---------
-
-## Stretch Goals
-
-**Exercise 3: Refactor the tests to allow reuse against other interpreters.**
-
-**Exercise 4: Implement an effectful interpreter for ASDF**
-
---------
-
-# Thank You
+# Questions?

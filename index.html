@@ -45,7 +45,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <section id="how-to-write-a-perfect-program" class="slide level1">
 <h1>How To Write A Perfect Program</h1>
 <p><a href="http://github.com/nuttycom">Kris Nuttycombe</a> – <a href="http://twitter.com/nuttycom"><code>@nuttycom</code></a></p>
-<p>April 19, 2014</p>
+<p>May 13, 2014</p>
 </section>
 <section class="slide level1">
 
@@ -53,11 +53,10 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <blockquote>
 <p>“Let me take you on an adventure which will give you superpowers.” –<a href="https://twitter.com/bitemyapp/status/455464035987623936"><code>@bitemyapp</code></a></p>
 </blockquote>
-<p><a href="https://github.com/nuttycom/lambdaconf-2014-workshop">https://github.com/nuttycom/lambdaconf-2014-workshop</a></p>
+<p><a href="https://github.com/nuttycom/startup_week-2014">https://github.com/nuttycom/startup_week-2014</a></p>
 <aside class="notes">
-<p>Trail of Awesome</p>
-<p>Perfect Programs</p>
-<p>Not on my board</p>
+<p>The First Form</p>
+<p>Not on my board / trail of awesome.</p>
 <p>Haskell and Scala</p>
 <ul>
 <li>Mention utility of types. - Piper</li>
@@ -72,8 +71,21 @@ code > span.er { color: #ff0000; font-weight: bold; }
   </code></pre>
 <p>This program doesn’t have any bugs.</p>
 <aside class="notes">
-<p>This program has only a single possible result.</p>
+<p>This is a very simple program - a value interpreted by an interpreter.</p>
+<p>How the interpreter presents that value to the person running it can vary.</p>
+<p>Represents a single state.</p>
 </aside>
+<div class="fragment">
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
+nuttycom<span class="fu">@</span>crash<span class="fu">:</span> <span class="fu">~</span> <span class="fu">$</span> ghci
+<span class="dt">GHCi</span>, version <span class="dv">7</span><span class="fu">.</span><span class="dv">6</span><span class="fu">.</span><span class="dv">3</span><span class="fu">:</span> http<span class="fu">://</span>www<span class="fu">.</span>haskell<span class="fu">.</span>org<span class="fu">/</span>ghc<span class="fu">/</span>  <span class="fu">:?</span> for help
+<span class="dt">Loading</span> package ghc<span class="fu">-</span>prim <span class="fu">...</span> linking <span class="fu">...</span> done<span class="fu">.</span>
+<span class="dt">Loading</span> package integer<span class="fu">-</span>gmp <span class="fu">...</span> linking <span class="fu">...</span> done<span class="fu">.</span>
+<span class="dt">Loading</span> package base <span class="fu">...</span> linking <span class="fu">...</span> done<span class="fu">.</span>
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">True</span>
+<span class="dt">True</span>
+  </code></pre>
+</div>
 </section>
 <section class="slide level1">
 
@@ -81,9 +93,10 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
 <span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="dt">True</span> <span class="fu">|</span> <span class="dt">False</span>
 
-<span class="ot">bool ::</span> <span class="dt">Bool</span>
+<span class="ot">boolProgram ::</span> <span class="dt">Bool</span>
 <span class="co">-- &quot;::&quot; is pronounced, &quot;has type&quot;</span>
   </code></pre>
+<p>How many states could boolProgram inhabit?</p>
 <div class="fragment">
 <p>1 + 1 = 2</p>
 <blockquote>
@@ -92,25 +105,37 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </div>
 <div class="fragment">
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="ot">i ::</span> <span class="dt">Int32</span>
+<span class="ot">intProgram ::</span> <span class="dt">Int32</span>
   </code></pre>
 </div>
 <div class="fragment">
 <p>This one is just awful…</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="ot">s ::</span> <span class="dt">String</span>
+<span class="ot">strProgram ::</span> <span class="dt">String</span>
   </code></pre>
 </div>
 </section>
 <section class="slide level1">
 
+<h2 id="learn-to-count-1">Learn to Count</h2>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="co">-- if haskell had unsafe type-level pattern matching... </span>
+<span class="ot">inhabitants ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span>
+
+inhabitants <span class="dt">Bool</span> <span class="fu">=</span> <span class="dv">2</span>
+inhabitants <span class="dt">Int32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
+  </code></pre>
+</section>
+<section class="slide level1">
+
 <h2 id="learn-to-add">Learn to Add</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="co">-- Maybe there&#39;s one of these...</span>
 <span class="kw">data</span> <span class="dt">Maybe</span> a <span class="fu">=</span> <span class="dt">Just</span> a <span class="fu">|</span> <span class="dt">Nothing</span>
 
 inhabitants (<span class="dt">Maybe</span> a) <span class="fu">=</span> inhabitants a <span class="fu">+</span> <span class="dv">1</span>
 
-
+<span class="co">-- Either there&#39;s one of these, or one of those...</span>
 <span class="kw">data</span> <span class="dt">Either</span> a b <span class="fu">=</span> <span class="dt">Left</span> a <span class="fu">|</span> <span class="dt">Right</span> b
 
 inhabitants (<span class="dt">Either</span> a b) <span class="fu">=</span> inhabitants a <span class="fu">+</span> inhabitants b
@@ -119,55 +144,63 @@ inhabitants (<span class="dt">Either</span> a b) <span class="fu">=</span> inhab
 </section>
 <section class="slide level1">
 
+<h2 id="learn-to-multiply">Learn to Multiply</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
 <span class="ot">tuple ::</span> (<span class="dt">Bool</span>, <span class="dt">Int32</span>)
   </code></pre>
 <ul>
-<li>2<sup>32</sup> inhabitants if the value on the left is True</li>
-<li><p>2<sup>32</sup> inhabitants if it’s False</p></li>
-<li><p>2<sup>32</sup> + 2<sup>32</sup> = 2 * 2^32 = 2<sup>33</sup></p></li>
+<li><code>fst :: (a, b) -&gt; a</code>
+<ul>
+<li><code>(fst tuple)</code> has 2 inhabitants <br/><br/></li>
+</ul></li>
+<li><code>snd :: (a, b) -&gt; b</code>
+<ul>
+<li>2<sup>32</sup> inhabitants if <code>(fst tuple) == True</code></li>
+<li>2<sup>32</sup> inhabitants if <code>(fst tuple) == False</code> <br/><br/></li>
+</ul></li>
+<li>2 * 2<sup>32</sup> = 2<sup>33</sup></li>
 </ul>
+<p>With tuples, we always multiply.</p>
 </section>
 <section class="slide level1">
 
-<h2 id="learn-to-multiply">Learn to Multiply</h2>
+<h2 id="learn-to-multiply-1">Learn to Multiply</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="co">-- if haskell had unsafe type-level pattern matching... </span>
-<span class="ot">inhabitants ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span>
-
-inhabitants <span class="dt">Bool</span> <span class="fu">=</span> <span class="dv">2</span>
-inhabitants <span class="dt">Int32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
-
 inhabitants (a, b) <span class="fu">=</span> inhabitants a <span class="fu">*</span> inhabitants b
 inhabitants (<span class="dt">Int32</span>, <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">*</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">64</span>
 
 inhabitants (a, b, c) <span class="fu">=</span> inhabitants a <span class="fu">*</span> inhabitants b <span class="fu">*</span> inhabitants c
 inhabitants (<span class="dt">Bool</span>, <span class="dt">Bool</span>, <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span> <span class="fu">*</span> <span class="dv">2</span> <span class="fu">*</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">34</span>
   </code></pre>
-<p>With tuples, we always multiply.</p>
 <p>We call these “product” types.</p>
 </section>
 <section class="slide level1">
 
-<p>2 + 2<sup>32</sup> = 2 * 2^32 = 2<sup>33</sup></p>
+<h2 id="isomorphic-types">Isomorphic Types</h2>
+<p>These types have the same inhabitants.</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-either<span class="ot"> ::</span> <span class="dt">Either</span> <span class="dt">Int32</span> <span class="dt">Int32</span>
-<span class="co">-- 2^33 inhabitants</span>
+<span class="co">-- expressed as a product</span>
+<span class="ot">tuple ::</span> (<span class="dt">Bool</span>, <span class="dt">Int32</span>) <span class="co">-- 2^33 inhabitants</span>
 
-<span class="ot">tuple ::</span> (<span class="dt">Bool</span>, <span class="dt">Int32</span>)
-<span class="co">-- 2^33 inhabitants</span>
+<span class="co">-- expressed as a sum</span>
+either<span class="ot"> ::</span> <span class="dt">Either</span> <span class="dt">Int32</span> <span class="dt">Int32</span> <span class="co">-- 2^33 inhabitants</span>
   </code></pre>
-<p>These types are isomorphic.</p>
-<p>Choose whichever one is most convenient.</p>
+<p>Choose whichever one is most convenient</p>
+<div class="fragment">
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="ot">eitherBoolOrInt ::</span> <span class="dt">Either</span> <span class="dt">Bool</span> <span class="dt">Int32</span> <span class="co">-- 2 + 2^32 inhabitants</span>
+  </code></pre>
+<p>Either is more flexible</p>
+</div>
 </section>
 <section class="slide level1">
 
 <h2 id="add-if-you-can-multiply-if-you-must">Add if you can, multiply if you must</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-inhabitants (<span class="dt">Maybe</span> <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">+</span> <span class="dv">1</span>
+inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span> <span class="fu">+</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
   </code></pre>
 <p>Most languages emphasize products. <br/><br/></p>
-<p>Bad ones don’t let you define a type <br/>with 2<sup>32</sup> + 1 inhabitants easily.</p>
+<p>Bad ones don’t let you define a type <br/>with 2 + 2<sup>32</sup> inhabitants easily.</p>
 <aside class="notes">
 <p>Sapir-Whorf</p>
 <p>Most mainstream languages today make products easy, sums hard.</p>
@@ -207,13 +240,19 @@ inhabitants (<span class="dt">Maybe</span> <span class="dt">Int32</span>) <span 
   }
 }</code></pre>
 </section>
+<section class="slide level1">
+
+<blockquote>
+<p>“Bug fixing strategy: forbid yourself to fix the bug. Instead, render the bug impossible by construction.” –<a href="https://twitter.com/extempore2/status/417366903209091073">Paul Phillips</a></p>
+</blockquote>
+</section>
 <section id="the-vampire-policy" class="slide level1">
 <h1>The Vampire Policy</h1>
 <figure>
 <img src="./img/bela-lugosi.jpg" />
 </figure>
 <blockquote>
-<p>“Bug fixing strategy: forbid yourself to fix the bug. Instead, render the bug impossible by construction.” –<a href="https://twitter.com/extempore2/status/417366903209091073">Paul Phillips</a></p>
+<p>Don’t let him in.</p>
 </blockquote>
 <aside class="notes">
 <p>To do this, we need to minimize the state space of our program.</p>
@@ -369,301 +408,8 @@ inhabitants (<span class="dt">Maybe</span> <span class="dt">Int32</span>) <span 
 <p>“Real world” interaction.</p>
 </aside>
 </section>
-<section id="side-effects" class="slide level1">
-<h1>Side Effects</h1>
-<figure>
-<img src="./img/trapped.png" />
-</figure>
-<blockquote>
-<p>in other words, what was that IO thingy?</p>
-</blockquote>
-<aside class="notes">
-<p>What is IO?</p>
-<p>A value of type IO[String] represents some action that can be performed to return a String.</p>
-<p>IO is kind of like if you had only a single sensory organ.</p>
-<p>It tells you that there’s something going on, but it’s not very specific about what.</p>
-<p>You couldn’t, for example, determine whether it was your hair or your hand that was on fire. That sort of thing.</p>
-<p>We want to be more specific. Sum types give us a way to do that.</p>
-</aside>
-</section>
-<section class="slide level1">
-
-<h2 id="managing-effects">Managing Effects</h2>
-<aside class="notes">
-<p>Minimizing the number of inhabitants of our program includes minimizing side effects.</p>
-<p>We want to be specific.</p>
-<p>Sounds like a job for a sum type!</p>
-</aside>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="co">// def findDocument(key: DocKey): EitherT[IO, DBErr, Document] = ???</span>
-<span class="co">// def storeWordCount(key: DocKey, wordCount: Long): EitherT[IO, DBErr, Unit] = ???</span>
-
-<span class="kw">sealed</span> <span class="kw">trait</span> DocAction
-<span class="kw">case</span> <span class="kw">class</span> <span class="fu">FindDocument</span>(key: DocKey) <span class="kw">extends</span> DocAction
-<span class="kw">case</span> <span class="kw">class</span> <span class="fu">StoreWordCount</span>(key: DocKey, wordCount: Long) <span class="kw">extends</span> DocAction
-  </code></pre>
-<p>How can we build a program out of these actions?</p>
-</section>
-<section class="slide level1">
-
-<h2 id="this">This?</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">object</span> DocAction {
-  <span class="kw">type</span> Program = List[DocAction]
-
-  <span class="kw">def</span> <span class="fu">runProgram</span>(actions: Program): IO[Unit] = ???
-}</code></pre>
-<ul>
-<li>Obviously, this doesn’t work.
-<ul>
-<li>can’t interleave pure computations</li>
-<li>no way to represent return values</li>
-<li>can’t produce a new DocAction from a Program</li>
-<li>can’t make later action a function of an earlier one <br/><br/></li>
-</ul></li>
-<li>But, it <em>is</em> conceptually related to what we want.
-<ul>
-<li>a data structure an ordered sequence of actions</li>
-<li>an interpreter that evaluates this data structure</li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level1">
-
-<h2 id="sequencing">Sequencing</h2>
-<p>Let’s, see, what is good for sequencing effects?</p>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">trait</span> Monad[M[_]] {
-  <span class="kw">def</span> pure[A](a: =&gt; A): M[A]
-  <span class="kw">def</span> bind[A, B](ma: M[A])(f: A =&gt; M[B]): M[B]
-}
-  </code></pre>
-<ul>
-<li>State threads state through a computation…</li>
-<li>Reader gives the same inputs to all…</li>
-<li>Writer keeps a log…</li>
-<li>Not going to be Option, List, …</li>
-</ul>
-</section>
-<section class="slide level1">
-
-<h2 id="requirements">Requirements</h2>
-<ul>
-<li><p><strong>restrict</strong> the client to only permit actions in our sum</p></li>
-<li><p>produce later actions as a function of earlier ones</p></li>
-<li><p>interleave pure computations with effectful</p></li>
-</ul>
-<aside class="notes">
-<p>Restate relationship of minimization of states to correctness.</p>
-</aside>
-</section>
-<section id="free" class="slide level1">
-<h1>Free</h1>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">sealed</span> <span class="kw">trait</span> Free[F[_], A]
-<span class="kw">case</span> <span class="kw">class</span> Pure[F[_], A](a: A) <span class="kw">extends</span> Free[F, A]
-<span class="kw">case</span> <span class="kw">class</span> Bind[F[_], A, B](s: Free[F, A], f: A =&gt; Free[F, B]) <span class="kw">extends</span> Free[F, A]
-<span class="kw">case</span> <span class="kw">class</span> Suspend[F[_], A](s: F[Free[F, A]]) <span class="kw">extends</span> Free[F, A]
-  </code></pre>
-<blockquote>
-<p>for a complete derivation of this type, see <a href="http://manning.com/bjarnason">Functional Programming In Scala</a></p>
-</blockquote>
-<p><strong>Exercise 1: Write the Monad instance for Free.</strong></p>
-<aside class="notes">
-<p>This data structure will take the place of List in our broken Program type.</p>
-<p>Instead of walking through the derivation, I’m going to show you how to use it, and I think that through the process of using it it’ll become obvious why it is useful for our purpose.</p>
-</aside>
-</section>
-<section class="slide level1">
-
-<h2 id="solution">Solution</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">object</span> Free {
-  <span class="kw">def</span> monad[F[_]] = <span class="kw">new</span> Monad[({ <span class="kw">type</span> λ[α] = Free[F, α] })#λ] {
-    <span class="kw">def</span> pure[A](a: =&gt; A): Free[F, A] = <span class="fu">Pure</span>(a)
-
-    <span class="co">// def bind[A, B](ma: Free[F, A])(f: A =&gt; Free[F, B]): Free[F, B] = Bind(ma, f)</span>
-
-    <span class="kw">def</span> bind[A, B](ma: Free[F, A])(f: A =&gt; Free[F, B]): Free[F, B] = ma <span class="kw">match</span> {
-      <span class="kw">case</span> <span class="fu">Bind</span>(ma0, f0) =&gt; <span class="fu">bind</span>(ma0) { a =&gt; <span class="fu">Bind</span>(<span class="fu">f0</span>(a), f) }
-      <span class="kw">case</span> other =&gt; <span class="fu">Bind</span>(other, f)
-    }
-  }
-}</code></pre>
-<aside class="notes">
-<p>Back to our requirements.</p>
-<p>Need to chain together</p>
-</aside>
-</section>
-<section class="slide level1">
-
-<h2 id="capture-the-rest-of-the-program">Capture The Rest of the Program</h2>
-<p>Here’s a little trick: store the rest of the program in each action.</p>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="co">// sealed trait DocAction</span>
-<span class="co">// case class FindDocument(key: DocKey) extends DocAction</span>
-<span class="co">// case class StoreWordCount(key: DocKey, wordCount: Long) extends DocAction</span>
-  
-<span class="kw">sealed</span> <span class="kw">trait</span> DocAction[A]
-<span class="kw">case</span> <span class="kw">class</span> <span class="fu">FindDocument</span>(key: DocKey, cont: Option[Document] =&gt; A) <span class="kw">extends</span> DocAction[A]
-<span class="kw">case</span> <span class="kw">class</span> <span class="fu">StoreWordCount</span>(key: DocKey, wordCount: Long, cont: () =&gt; A) <span class="kw">extends</span> DocAction[A]
-  </code></pre>
-<aside class="notes">
-<p>This is an implementation detail, really, but it’s a critical one.</p>
-<p>Remember, a program is a <em>value</em> representing a sequence of operations for an interpreter to follow. So, capturing the rest of the program is just capturing that description - there’s not a lot of overhead to it.</p>
-<p>Earlier, we used a list to represent this sequence, and a couple of slides back I introduced the Free data structure (which is itself a sum type) as the one we’d use to capture the sequence of operations. Let’s do that now.</p>
-</aside>
-</section>
-<section class="slide level1">
-
-<h2 id="write-a-little-language">Write a Little Language</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">sealed</span> <span class="kw">trait</span> DocAction[A]
-
-<span class="kw">object</span> DocAction {
-  <span class="kw">case</span> <span class="kw">class</span> FindDocument[A] <span class="kw">private</span>[DocAction] (
-    key: DocKey, 
-    cont: Option[Document] =&gt; A
-    ) <span class="kw">extends</span> DocAction[A]
-
-  <span class="kw">case</span> <span class="kw">class</span> StoreWordCount[A] <span class="kw">private</span>[DocAction] (
-    key: DocKey, wordCount: Long, 
-    cont: () =&gt; A
-    ) <span class="kw">extends</span> DocAction[A]
-
-  <span class="kw">type</span> Program[A] = Free[DocAction, A]
-
-  <span class="kw">def</span> <span class="fu">findDocument</span>(key: DocKey): Program[Option[Document]] = 
-    <span class="fu">Suspend</span>(<span class="fu">FindDocument</span>(key, <span class="fu">Pure</span>(_)))
-
-  <span class="kw">def</span> <span class="fu">storeWordCount</span>(key: DocKey, wordCount: Long): Program[Unit] = 
-    <span class="fu">Suspend</span>(<span class="fu">StoreWordCount</span>(key, wordCount, () =&gt; <span class="fu">Pure</span>(())))
-}
-  </code></pre>
-<aside class="notes">
-<p>Private constructors, no need to expose them.</p>
-<p>We now have a way to create programs, and we know in the abstract that because Free has a Monad, that we can chain those programs together.</p>
-<p>So let’s see what that looks like.</p>
-</aside>
-</section>
-<section id="write-a-perfect-program" class="slide level1">
-<h1>Write a Perfect Program!</h1>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">import</span> DocAction.<span class="fu">_</span>
-
-<span class="kw">val</span> program: Program[Unit] = <span class="kw">for</span> {
-  document &lt;- <span class="fu">findDocument</span>(docKey)
-  _ &lt;- document <span class="kw">match</span> {
-    <span class="kw">case</span> Some(d) =&gt; <span class="fu">storeWordCount</span>(docKey, <span class="fu">countWords</span>(d)) 
-    <span class="kw">case</span> None =&gt; Free.<span class="fu">monad</span>[DocAction].<span class="fu">pure</span>(())
-  }
-} <span class="kw">yield</span> ()
-  </code></pre>
-<aside class="notes">
-<p>While this looks like an effectful program, it’s just chaining together calls to the Program constructors that we defined previously. So, all that we’ve done is built up a data structure, like our original List, but much more powerful!</p>
-<p>The next thing to do is interpret this data structure.</p>
-</aside>
-</section>
-<section class="slide level1">
-
-<h2 id="a-pure-interpreter">A Pure Interpreter</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">type</span> Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec <span class="kw">def</span> run[A](program: Program[A], memory: Memory): A = {
-  program <span class="kw">match</span> {
-    <span class="kw">case</span> <span class="fu">Pure</span>(a) =&gt; a
-
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">FindDocument</span>(key, cont)) =&gt; ???
-
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">StoreWordCount</span>(key, n, cont)) =&gt; ???
-
-    <span class="kw">case</span> <span class="fu">Bind</span>(s, f) =&gt; ???
-  }
-}</code></pre>
-</section>
-<section class="slide level1">
-
-<h2 id="a-pure-interpreter-2">A Pure Interpreter #2</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">type</span> Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec <span class="kw">def</span> run[A](program: Program[A], memory: Memory): A = {
-  program <span class="kw">match</span> {
-    <span class="kw">case</span> <span class="fu">Pure</span>(a) =&gt; a
-
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">FindDocument</span>(key, cont)) =&gt;
-      <span class="fu">run</span>(<span class="fu">cont</span>(memory.<span class="fu">get</span>(key).<span class="fu">map</span>(_.<span class="fu">_1</span>)), memory)
-
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">StoreWordCount</span>(key, n, cont)) =&gt; ???
-
-    <span class="kw">case</span> <span class="fu">Bind</span>(s, f) =&gt; ???
-  }
-}</code></pre>
-</section>
-<section class="slide level1">
-
-<h2 id="a-pure-interpreter-3">A Pure Interpreter #3</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">type</span> Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec <span class="kw">def</span> run[A](program: Program[A], memory: Memory): A = {
-  program <span class="kw">match</span> {
-    <span class="kw">case</span> <span class="fu">Pure</span>(a) =&gt; a
-
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">FindDocument</span>(key, cont)) =&gt;
-      <span class="fu">run</span>(<span class="fu">cont</span>(memory.<span class="fu">get</span>(key).<span class="fu">map</span>(_.<span class="fu">_1</span>)), memory)
-
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">StoreWordCount</span>(key, n, cont)) =&gt; ???
-      <span class="kw">val</span> newValue = memory.<span class="fu">get</span>(key).<span class="fu">map</span>(_.<span class="fu">copy</span>(_2 = Some(n)))
-      <span class="kw">val</span> newMemory = memory ++ newValue.<span class="fu">map</span>(key -&gt; _)
-      <span class="fu">run</span>(<span class="fu">cont</span>(), newMemory)
-
-    <span class="kw">case</span> <span class="fu">Bind</span>(s, f) =&gt; ???
-  }
-}</code></pre>
-</section>
-<section class="slide level1">
-
-<h2 id="a-pure-interpreter-4">A Pure Interpreter #4</h2>
-<pre class="sourceCode scala"><code class="sourceCode scala">
-<span class="kw">type</span> Memory = Map[DocKey, (Document, Option[Long])]
-
-@tailrec <span class="kw">def</span> run[A](program: Program[A], memory: Memory): A = {
-  program <span class="kw">match</span> {
-    <span class="kw">case</span> <span class="fu">Pure</span>(a) =&gt; a
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">FindDocument</span>(key, cont)) =&gt; <span class="co">// implemented </span>
-    <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">StoreWordCount</span>(key, n, cont)) =&gt; <span class="co">//implemented</span>
-
-    <span class="kw">case</span> <span class="fu">Bind</span>(s, f) =&gt; 
-      s <span class="kw">match</span> {
-        <span class="kw">case</span> <span class="fu">Pure</span>(a) =&gt; <span class="fu">run</span>(<span class="fu">f</span>(a), memory)
-
-        <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">FindDocument</span>(key, cont)) =&gt;
-          <span class="fu">run</span>(<span class="fu">Bind</span>(<span class="fu">cont</span>(memory.<span class="fu">get</span>(key).<span class="fu">map</span>(_.<span class="fu">_1</span>)), f), memory)
-
-        <span class="kw">case</span> <span class="fu">Suspend</span>(<span class="fu">StoreWordCount</span>(key, n, cont)) =&gt;
-          <span class="kw">val</span> newValue = memory.<span class="fu">get</span>(key).<span class="fu">map</span>(_.<span class="fu">copy</span>(_2 = Some(n)))
-          <span class="kw">val</span> newMemory = memory ++ newValue.<span class="fu">map</span>(key -&gt; _)
-          <span class="fu">run</span>(<span class="fu">Bind</span>(<span class="fu">cont</span>(), f), newMemory)
-
-        <span class="kw">case</span> <span class="fu">Bind</span>(s0, f0) =&gt;
-          <span class="fu">run</span>(<span class="fu">Bind</span>(s0, (a: Any) =&gt; <span class="fu">Bind</span>(<span class="fu">f0</span>(a), f)), memory)
-      }
-  }
-}</code></pre>
-<p><strong>Exercise 2: Implement a pure interpreter for ASDF</strong></p>
-<aside class="notes">
-<p>After this, we’ll work on side-effecting interpreter.</p>
-</aside>
-</section>
-<section class="slide level1">
-
-<h2 id="stretch-goals">Stretch Goals</h2>
-<p><strong>Exercise 3: Refactor the tests to allow reuse against other interpreters.</strong></p>
-<p><strong>Exercise 4: Implement an effectful interpreter for ASDF</strong></p>
-</section>
-<section id="thank-you" class="slide level1">
-<h1>Thank You</h1>
+<section id="questions" class="slide level1">
+<h1>Questions?</h1>
 </section>
     </div>
   </div>
