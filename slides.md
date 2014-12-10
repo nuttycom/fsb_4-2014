@@ -436,7 +436,7 @@ What types should we not let in?
 
 > The type `String` should only ever appear in your program when a value is being shown to a human being.
 
-## Two common offenders
+**Two common offenders**
 
 * Strings as dictionary keys
 * Strings as serialized form
