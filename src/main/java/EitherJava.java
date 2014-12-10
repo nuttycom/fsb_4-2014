@@ -1,3 +1,5 @@
+import java.util.*;
+
 class EitherJava {
   interface EitherVisitor<A, B, C> {
     public C visitLeft(Left<A, B> left);
@@ -27,6 +29,30 @@ class EitherJava {
 
     public <C> C accept(EitherVisitor<A, B, C> visitor) {
       return visitor.visitRight(this);
+    }
+  }
+
+  public static void main(String[] argv) {
+    List<Either<Boolean, Integer>> xs = new ArrayList<>();
+    xs.add(new Left<Boolean, Integer>(true));
+    xs.add(new Right<Boolean, Integer>(1));
+    xs.add(new Left<Boolean, Integer>(false));
+    xs.add(new Right<Boolean, Integer>(2));
+
+    for (Either<Boolean, Integer> x : xs) {
+      x.accept(
+        new EitherVisitor<Boolean, Integer, Void>() {
+          public Void visitLeft(Left<Boolean, Integer> left) {
+            System.out.println("It's a left: " + (!left.value));
+            return null;
+          }
+
+          public Void visitRight(Right<Boolean, Integer> right) {
+            System.out.println("It's a right: " + (right.value + 1));
+            return null;
+          }
+        }
+      );
     }
   }
 }

@@ -29,10 +29,19 @@ code > span.fu { color: #06287e; }
 code > span.er { color: #ff0000; font-weight: bold; }
     </style>
     <link rel="stylesheet" href="reveal.js/css/theme/simple.css" id="theme">
-  <link rel="stylesheet" media="print" href="reveal.js/css/print/pdf.css" />
-  <!--[if lt IE 9]>
-  <script src="reveal.js/lib/js/html5shiv.js"></script>
-  <![endif]-->
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+    <!--[if lt IE 9]>
+    <script src="reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
     <style type="text/css">
      code { font-size: 24px; }
     </style>
@@ -45,7 +54,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <section id="how-to-write-a-perfect-program" class="slide level1">
 <h1>How To Write A Perfect Program</h1>
 <p><a href="http://github.com/nuttycom">Kris Nuttycombe</a> – <a href="http://twitter.com/nuttycom"><code>@nuttycom</code></a></p>
-<p>May 13, 2014</p>
+<p>Dec 10, 2014</p>
 </section>
 <section class="slide level1">
 
@@ -53,37 +62,37 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <blockquote>
 <p>“Let me take you on an adventure which will give you superpowers.” –<a href="https://twitter.com/bitemyapp/status/455464035987623936"><code>@bitemyapp</code></a></p>
 </blockquote>
-<p><a href="https://github.com/nuttycom/startup_week-2014">https://github.com/nuttycom/startup_week-2014</a></p>
+<p><a href="https://github.com/nuttycom/fsb_4-2014" class="uri">https://github.com/nuttycom/fsb_4-2014</a></p>
 <aside class="notes">
 <p>The First Form</p>
 <p>Not on my board / trail of awesome.</p>
-<p>Haskell and Scala</p>
-<ul>
-<li>Mention utility of types. - Piper</li>
-<li>Going to start with a very simple program.</li>
-</ul>
+<p>Utility of types - we want machines to help us as much as they can.</p>
+<p>At the time you write the code, you have a mental model of what operations are legal with a given value. That mental model is a type.</p>
 </aside>
 </section>
-<section id="start-very-simple" class="slide level1">
-<h1>Start Very Simple</h1>
+<section class="slide level1">
+
+<h2 id="the-simplest-program-possible">The Simplest Program Possible</h2>
+<p>This program doesn’t have any bugs:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="dt">True</span>
+()
   </code></pre>
-<p>This program doesn’t have any bugs.</p>
 <aside class="notes">
 <p>This is a very simple program - a value interpreted by an interpreter.</p>
 <p>How the interpreter presents that value to the person running it can vary.</p>
-<p>Represents a single state.</p>
+<p>Only has one state.</p>
+<p>The empty tuple - does everybody know the difference between a tuple and a list?</p>
 </aside>
 <div class="fragment">
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-nuttycom<span class="fu">@</span>crash<span class="fu">:</span> <span class="fu">~</span> <span class="fu">$</span> ghci
-<span class="dt">GHCi</span>, version <span class="dv">7</span><span class="fu">.</span><span class="dv">6</span><span class="fu">.</span><span class="dv">3</span><span class="fu">:</span> http<span class="fu">://</span>www<span class="fu">.</span>haskell<span class="fu">.</span>org<span class="fu">/</span>ghc<span class="fu">/</span>  <span class="fu">:?</span> for help
+kris<span class="fu">@</span>floorshow <span class="fu">~</span> » ghci
+<span class="dt">GHCi</span>, version <span class="fl">7.8</span><span class="fu">.</span><span class="dv">3</span><span class="fu">:</span> http<span class="fu">://</span>www<span class="fu">.</span>haskell<span class="fu">.</span>org<span class="fu">/</span>ghc<span class="fu">/</span>  <span class="fu">:?</span> for help
 <span class="dt">Loading</span> package ghc<span class="fu">-</span>prim <span class="fu">...</span> linking <span class="fu">...</span> done<span class="fu">.</span>
 <span class="dt">Loading</span> package integer<span class="fu">-</span>gmp <span class="fu">...</span> linking <span class="fu">...</span> done<span class="fu">.</span>
 <span class="dt">Loading</span> package base <span class="fu">...</span> linking <span class="fu">...</span> done<span class="fu">.</span>
-<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="dt">True</span>
-<span class="dt">True</span>
+
+<span class="dt">Prelude</span><span class="fu">&gt;</span> ()
+()
   </code></pre>
 </div>
 </section>
@@ -92,44 +101,62 @@ nuttycom<span class="fu">@</span>crash<span class="fu">:</span> <span class="fu"
 <h2 id="learn-to-count">Learn To Count</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
 <span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="dt">True</span> <span class="fu">|</span> <span class="dt">False</span>
-
-<span class="ot">boolProgram ::</span> <span class="dt">Bool</span>
-<span class="co">-- &quot;::&quot; is pronounced, &quot;has type&quot;</span>
   </code></pre>
-<p>How many states could boolProgram inhabit?</p>
 <div class="fragment">
-<p>1 + 1 = 2</p>
-<blockquote>
-<p>applause</p>
-</blockquote>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="ot">boolProgram ::</span> <span class="dt">Bool</span>
+boolProgram <span class="fu">=</span> <span class="co">--hidden</span>
+  </code></pre>
+<aside class="notes">
+<p>“::” is pronounced “has type”</p>
+</aside>
+<p>How many states can a program of type Bool be inhabited by?</p>
 </div>
 <div class="fragment">
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="co">-- let&#39;s imagine haskell had type-level functions ... </span>
+<span class="ot">inhabitants ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span>
+
+inhabitants <span class="dt">Bool</span> <span class="fu">=</span> inhabitants <span class="dt">True</span> <span class="fu">+</span> inhabitants <span class="dt">False</span>
+inhabitants <span class="dt">Bool</span> <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> <span class="dv">1</span>
+inhabitants <span class="dt">Bool</span> <span class="fu">=</span> <span class="dv">2</span>
+  </code></pre>
+</div>
+</section>
+<section class="slide level1">
+
+<h2 id="counting-higher">Counting Higher</h2>
+<p>How many states in a program does a value of type Int32 represent?</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
 <span class="ot">intProgram ::</span> <span class="dt">Int32</span>
+  </code></pre>
+<div class="fragment">
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
+inhabitants <span class="dt">Int32</span> <span class="fu">=</span> inhabitants <span class="fu">-</span><span class="dv">2147438648</span> 
+                  <span class="fu">+</span> inhabitants <span class="fu">-</span><span class="dv">2147439647</span>
+                  <span class="fu">+</span> <span class="fu">...</span>
+                  <span class="fu">+</span> inhabitants <span class="dv">2147439647</span>
+
+inhabitants <span class="dt">Int32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
   </code></pre>
 </div>
 <div class="fragment">
 <p>This one is just awful…</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
 <span class="ot">strProgram ::</span> <span class="dt">String</span>
+
+inhabitants <span class="dt">String</span> <span class="fu">=</span> <span class="fu">?????</span>
   </code></pre>
 </div>
 </section>
 <section class="slide level1">
 
-<h2 id="learn-to-count-1">Learn to Count</h2>
-<pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="co">-- if haskell had unsafe type-level pattern matching... </span>
-<span class="ot">inhabitants ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span>
-
-inhabitants <span class="dt">Bool</span> <span class="fu">=</span> <span class="dv">2</span>
-inhabitants <span class="dt">Int32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
-  </code></pre>
-</section>
-<section class="slide level1">
-
 <h2 id="learn-to-add">Learn to Add</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="dt">True</span> <span class="fu">|</span> <span class="dt">False</span>
+
+inhabitants <span class="dt">Bool</span> <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> <span class="dv">1</span>
+
 <span class="co">-- Maybe there&#39;s one of these...</span>
 <span class="kw">data</span> <span class="dt">Maybe</span> a <span class="fu">=</span> <span class="dt">Just</span> a <span class="fu">|</span> <span class="dt">Nothing</span>
 
@@ -140,66 +167,59 @@ inhabitants (<span class="dt">Maybe</span> a) <span class="fu">=</span> inhabita
 
 inhabitants (<span class="dt">Either</span> a b) <span class="fu">=</span> inhabitants a <span class="fu">+</span> inhabitants b
   </code></pre>
-<p>Bool, Maybe and Either are called sum types for the obvious reason.</p>
+<p>Bool, Maybe and Either are called “sum” types.</p>
 </section>
 <section class="slide level1">
 
 <h2 id="learn-to-multiply">Learn to Multiply</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="ot">tuple ::</span> (<span class="dt">Bool</span>, <span class="dt">Int32</span>)
-  </code></pre>
-<ul>
-<li><code>fst :: (a, b) -&gt; a</code>
-<ul>
-<li><code>(fst tuple)</code> has 2 inhabitants <br/><br/></li>
-</ul></li>
-<li><code>snd :: (a, b) -&gt; b</code>
-<ul>
-<li>2<sup>32</sup> inhabitants if <code>(fst tuple) == True</code></li>
-<li>2<sup>32</sup> inhabitants if <code>(fst tuple) == False</code> <br/><br/></li>
-</ul></li>
-<li>2 * 2<sup>32</sup> = 2<sup>33</sup></li>
-</ul>
-<p>With tuples, we always multiply.</p>
+<span class="ot">boolAndInt ::</span> (<span class="dt">Bool</span>, <span class="dt">Int32</span>)
+
+inhabitants (<span class="dt">Bool</span>, <span class="dt">Int32</span>) <span class="fu">=</span> inhabitants <span class="dt">Bool</span> <span class="fu">???</span> inhabitants <span class="dt">Int32</span>
+
+                          <span class="fu">=</span> inhabitants <span class="dt">Int32</span> <span class="co">-- if _1 == True</span>
+                          <span class="fu">+</span> inhabitants <span class="dt">Int32</span> <span class="co">-- if _1 == False</span>
+  
+                          <span class="fu">=</span> inhabitants <span class="dt">Bool</span> <span class="fu">*</span> inhabitants <span class="dt">Int32</span>
+
+                          <span class="fu">=</span> <span class="dv">2</span> <span class="fu">*</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
+
+                          <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">33</span></code></pre>
+<p>Tuples (and objects) are called “product” types.</p>
 </section>
 <section class="slide level1">
 
-<h2 id="learn-to-multiply-1">Learn to Multiply</h2>
+<h2 id="different-shapes-same-implications">Different Shapes, Same Implications</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-inhabitants (a, b) <span class="fu">=</span> inhabitants a <span class="fu">*</span> inhabitants b
-inhabitants (<span class="dt">Int32</span>, <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">*</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">64</span>
+inhabitants (<span class="dt">Bool</span>, <span class="dt">Int32</span>)      <span class="fu">=</span> inhabitants <span class="dt">Bool</span> <span class="fu">*</span> inhabitants <span class="dt">Int32</span>
+                               <span class="fu">=</span> <span class="dv">2</span> <span class="fu">*</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
+                               <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">33</span> 
 
-inhabitants (a, b, c) <span class="fu">=</span> inhabitants a <span class="fu">*</span> inhabitants b <span class="fu">*</span> inhabitants c
-inhabitants (<span class="dt">Bool</span>, <span class="dt">Bool</span>, <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span> <span class="fu">*</span> <span class="dv">2</span> <span class="fu">*</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">34</span>
+inhabitants <span class="dt">Either</span> <span class="dt">Int32</span> <span class="dt">Int32</span> <span class="fu">=</span> inhabitants <span class="dt">Int32</span> <span class="fu">+</span> inhabitants <span class="dt">Int32</span>
+                               <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span> <span class="fu">+</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
+                               <span class="fu">=</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">33</span>
   </code></pre>
-<p>We call these “product” types.</p>
-</section>
-<section class="slide level1">
-
-<h2 id="isomorphic-types">Isomorphic Types</h2>
-<p>These types have the same inhabitants.</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="co">-- expressed as a product</span>
-<span class="ot">tuple ::</span> (<span class="dt">Bool</span>, <span class="dt">Int32</span>) <span class="co">-- 2^33 inhabitants</span>
-
-<span class="co">-- expressed as a sum</span>
-either<span class="ot"> ::</span> <span class="dt">Either</span> <span class="dt">Int32</span> <span class="dt">Int32</span> <span class="co">-- 2^33 inhabitants</span>
-  </code></pre>
-<p>Choose whichever one is most convenient</p>
+<p>These types are <em>isomorphic</em></p>
 <div class="fragment">
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-<span class="ot">eitherBoolOrInt ::</span> <span class="dt">Either</span> <span class="dt">Bool</span> <span class="dt">Int32</span> <span class="co">-- 2 + 2^32 inhabitants</span>
+<span class="ot">toEither ::</span> (<span class="dt">Bool</span>, a) <span class="ot">-&gt;</span> <span class="dt">Either</span> a a
+toEither (<span class="dt">True</span>, a) <span class="fu">=</span> <span class="dt">Right</span> a
+toEither (<span class="dt">False</span>, a) <span class="fu">=</span> <span class="dt">Right</span> a
+
+<span class="ot">fromEither ::</span> <span class="dt">Either</span> a a <span class="ot">-&gt;</span> (<span class="dt">Bool</span>, a)
+fromEither (<span class="dt">Right</span> a) <span class="fu">=</span> (<span class="dt">True</span>, a)
+fromEither (<span class="dt">Left</span> a)  <span class="fu">=</span> (<span class="dt">False</span>, a)
   </code></pre>
-<p>Either is more flexible</p>
 </div>
 </section>
 <section class="slide level1">
 
 <h2 id="add-if-you-can-multiply-if-you-must">Add if you can, multiply if you must</h2>
 <pre class="sourceCode haskell"><code class="sourceCode haskell">
-inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span class="dt">Int32</span>) <span class="fu">=</span> <span class="dv">2</span> <span class="fu">+</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
+inhabitants <span class="dt">Either</span> <span class="dt">Bool</span> <span class="dt">Int32</span> <span class="fu">=</span> inhabitants <span class="dt">Bool</span> <span class="fu">+</span> inhabitants <span class="dt">Int32</span>
+                              <span class="fu">=</span> <span class="dv">2</span> <span class="fu">+</span> <span class="dv">2</span><span class="fu">^</span><span class="dv">32</span>
   </code></pre>
-<p>Most languages emphasize products. <br/><br/></p>
+<p>Most languages emphasize products.</p>
 <p>Bad ones don’t let you define a type <br/>with 2 + 2<sup>32</sup> inhabitants easily.</p>
 <aside class="notes">
 <p>Sapir-Whorf</p>
@@ -209,6 +229,74 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
 </section>
 <section class="slide level1">
 
+<h2 id="haskell">Haskell</h2>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">data</span> <span class="dt">Either</span> a b <span class="fu">=</span> <span class="dt">Left</span> a <span class="fu">|</span> <span class="dt">Right</span> b
+
+<span class="dt">Prelude</span><span class="fu">&gt;</span> <span class="kw">let</span> printEither (<span class="dt">Left</span> b)  <span class="fu">=</span> putStrLn <span class="fu">$</span> <span class="st">&quot;It&#39;s a left: &quot;</span>  <span class="fu">++</span> show (not b)
+<span class="dt">Prelude</span><span class="fu">|</span>     printEither (<span class="dt">Right</span> i) <span class="fu">=</span> putStrLn <span class="fu">$</span> <span class="st">&quot;It&#39;s a right: &quot;</span> <span class="fu">++</span> show (i <span class="fu">+</span> <span class="dv">1</span>)
+<span class="dt">Prelude</span><span class="fu">|</span> <span class="kw">in</span>  traverse printEither [<span class="dt">Left</span> <span class="dt">True</span>, <span class="dt">Right</span> <span class="dv">1</span>, <span class="dt">Left</span> <span class="dt">False</span>, <span class="dt">Right</span> <span class="dv">2</span>]
+
+<span class="dt">It&#39;s</span> a left<span class="fu">:</span> <span class="dt">False</span>
+<span class="dt">It&#39;s</span> a right<span class="fu">:</span> <span class="dv">2</span>
+<span class="dt">It&#39;s</span> a left<span class="fu">:</span> <span class="dt">True</span>
+<span class="dt">It&#39;s</span> a right<span class="fu">:</span> <span class="dv">3</span>
+[(),(),(),()]
+  </code></pre>
+</section>
+<section class="slide level1">
+
+<h2 id="scala">Scala</h2>
+<pre class="sourceCode scala"><code class="sourceCode scala">
+scala&gt; :paste
+<span class="co">// Entering paste mode (ctrl-D to finish)</span>
+
+<span class="kw">sealed</span> <span class="kw">trait</span> Either[A, B]
+<span class="kw">case</span> <span class="kw">class</span> Left[A, B](a: A) <span class="kw">extends</span> Either[A, B]
+<span class="kw">case</span> <span class="kw">class</span> Right[A, B](b: B) <span class="kw">extends</span> Either[A, B]
+
+<span class="co">// Exiting paste mode, now interpreting.</span>
+
+scala&gt; <span class="kw">val</span> xs : List[Either[Boolean, Int]] =
+     |   List(<span class="fu">Left</span>(<span class="kw">true</span>), <span class="fu">Right</span>(<span class="dv">1</span>), <span class="fu">Left</span>(<span class="kw">false</span>), <span class="fu">Right</span>(<span class="dv">2</span>))
+
+scala&gt; xs foreach {
+     |   <span class="kw">case</span> <span class="fu">Left</span>(b)  =&gt; <span class="fu">println</span>(s<span class="st">&quot;It&#39;s a left: ${!b}&quot;</span>)
+     |   <span class="kw">case</span> <span class="fu">Right</span>(i) =&gt; <span class="fu">println</span>(s<span class="st">&quot;It&#39;s a right: ${i + 1}&quot;</span>)
+     | }
+It&#39;s a left: <span class="kw">false</span>
+It&#39;s a right: <span class="dv">2</span>
+It&#39;s a left: <span class="kw">true</span>
+It&#39;s a right: <span class="dv">3</span>
+  </code></pre>
+</section>
+<section class="slide level1">
+
+<h2 id="javascript">JavaScript</h2>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">function</span> <span class="fu">left</span>(a) {
+  <span class="kw">return</span> <span class="kw">function</span>(ifLeft, ifRight) { <span class="kw">return</span> <span class="fu">ifLeft</span>(a); };
+}
+
+<span class="kw">function</span> <span class="fu">right</span>(b) {
+  <span class="kw">return</span> <span class="kw">function</span>(ifLeft, ifRight) { <span class="kw">return</span> <span class="fu">ifRight</span>(b); };
+}</code></pre>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> xs = [<span class="fu">left</span>(<span class="kw">true</span>), <span class="fu">right</span>(<span class="dv">1</span>), <span class="fu">left</span>(<span class="kw">false</span>), <span class="fu">right</span>(<span class="dv">2</span>)];
+
+<span class="kw">for</span> (i = <span class="dv">0</span>; i &lt; <span class="ot">xs</span>.<span class="fu">length</span>; i += <span class="dv">1</span>) {
+  <span class="kw">var</span> eitherVal = xs[i]
+  <span class="fu">eitherVal</span>(
+    <span class="kw">function</span>(b) { <span class="ot">console</span>.<span class="fu">log</span>(<span class="st">&quot;It&#39;s a left: &quot;</span> + !b) },
+    <span class="kw">function</span>(i) { <span class="ot">console</span>.<span class="fu">log</span>(<span class="st">&quot;It&#39;s a right: &quot;</span> + (i + <span class="dv">1</span>)) }
+  )
+}</code></pre>
+<pre class="sourceCode javascript"><code class="sourceCode javascript">It<span class="st">&#39;s a left: false</span>
+It<span class="st">&#39;s a right: 2</span>
+It<span class="st">&#39;s a left: true</span>
+It<span class="st">&#39;s a right: 3</span></code></pre>
+</section>
+<section class="slide level1">
+
+<h2 id="java">Java</h2>
 <pre class="sourceCode java"><code class="sourceCode java"><span class="kw">interface</span> EitherVisitor&lt;A, B, C&gt; {
   <span class="kw">public</span> C <span class="fu">visitLeft</span>(Left&lt;A, B&gt; left);
   <span class="kw">public</span> C <span class="fu">visitRight</span>(Right&lt;A, B&gt; right);
@@ -220,9 +308,7 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
 
 <span class="kw">public</span> <span class="dt">final</span> <span class="kw">class</span> Left&lt;A, B&gt; <span class="kw">implements</span> Either&lt;A, B&gt; {
   <span class="kw">public</span> <span class="dt">final</span> A value;
-  <span class="kw">public</span> <span class="fu">Left</span>(A value) {
-    <span class="kw">this</span>.<span class="fu">value</span> = value;
-  }
+  <span class="kw">public</span> <span class="fu">Left</span>(A value) { <span class="kw">this</span>.<span class="fu">value</span> = value; }
 
   <span class="kw">public</span> &lt;C&gt; C <span class="fu">accept</span>(EitherVisitor&lt;A, B, C&gt; visitor) {
     <span class="kw">return</span> visitor.<span class="fu">visitLeft</span>(<span class="kw">this</span>);
@@ -231,14 +317,50 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
 
 <span class="kw">public</span> <span class="dt">final</span> <span class="kw">class</span> Right&lt;A, B&gt; <span class="kw">implements</span> Either&lt;A, B&gt; {
   <span class="kw">public</span> <span class="dt">final</span> B value;
-  <span class="kw">public</span> <span class="fu">Right</span>(B value) {
-    <span class="kw">this</span>.<span class="fu">value</span> = value;
-  }
+  <span class="kw">public</span> <span class="fu">Right</span>(B value) { <span class="kw">this</span>.<span class="fu">value</span> = value; }
 
   <span class="kw">public</span> &lt;C&gt; C <span class="fu">accept</span>(EitherVisitor&lt;A, B, C&gt; visitor) {
     <span class="kw">return</span> visitor.<span class="fu">visitRight</span>(<span class="kw">this</span>);
   }
 }</code></pre>
+</section>
+<section class="slide level1">
+
+<h2 id="java-1">Java</h2>
+<pre class="sourceCode java"><code class="sourceCode java">  <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(String[] argv) {
+    List&lt;Either&lt;Boolean, Integer&gt;&gt; xs = <span class="kw">new</span> ArrayList&lt;&gt;();
+    xs.<span class="fu">add</span>(<span class="kw">new</span> Left&lt;Boolean, Integer&gt;(<span class="kw">true</span>));
+    xs.<span class="fu">add</span>(<span class="kw">new</span> Right&lt;Boolean, Integer&gt;(<span class="dv">1</span>));
+    xs.<span class="fu">add</span>(<span class="kw">new</span> Left&lt;Boolean, Integer&gt;(<span class="kw">false</span>));
+    xs.<span class="fu">add</span>(<span class="kw">new</span> Right&lt;Boolean, Integer&gt;(<span class="dv">2</span>));
+
+    <span class="kw">for</span> (Either&lt;Boolean, Integer&gt; x : xs) {
+      x.<span class="fu">accept</span>(
+        <span class="kw">new</span> EitherVisitor&lt;Boolean, Integer, Void&gt;() {
+          <span class="kw">public</span> Void <span class="fu">visitLeft</span>(Left&lt;Boolean, Integer&gt; left) {
+            System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;It&#39;s a left: &quot;</span> + (!left.<span class="fu">value</span>));
+            <span class="kw">return</span> <span class="kw">null</span>;
+          }
+
+          <span class="kw">public</span> Void <span class="fu">visitRight</span>(Right&lt;Boolean, Integer&gt; right) {
+            System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;It&#39;s a right: &quot;</span> + (right.<span class="fu">value</span> + <span class="dv">1</span>));
+            <span class="kw">return</span> <span class="kw">null</span>;
+          }
+        }
+      );
+    }
+  }</code></pre>
+</section>
+<section class="slide level1">
+
+<h2 id="java-2">Java</h2>
+<pre class="sourceCode java"><code class="sourceCode java">
+kris<span class="fu">@heartland</span> ~/personal/fsb_4<span class="dv">-2014</span>/src/main/java » java EitherJava
+It&#39;s a left: <span class="kw">false</span>
+It&#39;s a right: <span class="dv">2</span>
+It&#39;s a left: <span class="kw">true</span>
+It&#39;s a right: <span class="dv">3</span>
+  </code></pre>
 </section>
 <section class="slide level1">
 
@@ -252,15 +374,16 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
 <img src="./img/bela-lugosi.jpg" />
 </figure>
 <blockquote>
-<p>Don’t let him in.</p>
+<p>Don’t invite errors into your program.</p>
 </blockquote>
 <aside class="notes">
 <p>To do this, we need to minimize the state space of our program.</p>
 <p>What types should we not let in?</p>
 </aside>
 </section>
-<section id="strings-ugh." class="slide level1">
-<h1>Strings (Ugh.)</h1>
+<section class="slide level1">
+
+<h2 id="strings-ugh.">Strings (Ugh.)</h2>
 <blockquote>
 <p>The type <code>String</code> should only ever appear in your program when a value is being shown to a human being.</p>
 </blockquote>
@@ -314,9 +437,10 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
 <p>This approach applies to virtually every primitive type.</p>
 </aside>
 </section>
-<section id="stake" class="slide level1">
-<h1>Stake</h1>
-<h2 id="import-scalaz._">import scalaz._</h2>
+<section class="slide level1">
+
+<h2 id="stake">Stake</h2>
+<p>**import scalaz._**</p>
 <p>Three very useful types:</p>
 <ul>
 <li><p><code>A \/ B</code></p></li>
@@ -414,6 +538,7 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
     </div>
   </div>
 
+
   <script src="reveal.js/lib/js/head.min.js"></script>
   <script src="reveal.js/js/reveal.min.js"></script>
 
@@ -438,5 +563,5 @@ inhabitants (<span class="dt">Either</span> <span class="dt">Bool</span> <span c
 //          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
 ]});
     </script>
-  </body>
+    </body>
 </html>

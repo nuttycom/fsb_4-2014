@@ -2,7 +2,7 @@
 
 [Kris Nuttycombe](http://github.com/nuttycom) -- [`@nuttycom`](http://twitter.com/nuttycom)
 
-May 13, 2014
+Dec 10, 2014
 
 ---------
 
@@ -10,7 +10,7 @@ May 13, 2014
 
 > "Let me take you on an adventure which will give you superpowers." --[`@bitemyapp`](https://twitter.com/bitemyapp/status/455464035987623936)
 
-<https://github.com/nuttycom/startup_week-2014>
+<https://github.com/nuttycom/fsb_4-2014>
 
 <div class="notes">
 
@@ -18,24 +18,24 @@ The First Form
 
 Not on my board / trail of awesome.
 
-Haskell and Scala
+Utility of types - we want machines to help us as much as they can. 
 
-* Mention utility of types. - Piper
-* Going to start with a very simple program.
+At the time you write the code, you have a mental model of what operations are
+legal with a given value. That mental model is a type.
 
 </div>
 
 -------
 
-# Start Very Simple
+## The Simplest Program Possible
+
+This program doesn't have any bugs:
 
 ~~~{.haskell }
 
-True
+()
   
 ~~~
-
-This program doesn't have any bugs.
 
 <div class="notes">
 
@@ -43,7 +43,9 @@ This is a very simple program - a value interpreted by an interpreter.
 
 How the interpreter presents that value to the person running it can vary.
 
-Represents a single state.
+Only has one state.
+
+The empty tuple - does everybody know the difference between a tuple and a list?
 
 </div>
 
@@ -51,16 +53,16 @@ Represents a single state.
 
 ~~~{.haskell }
 
-nuttycom@crash: ~ $ ghci
-GHCi, version 7.6.3: http://www.haskell.org/ghc/  :? for help
+kris@floorshow ~ » ghci
+GHCi, version 7.8.3: http://www.haskell.org/ghc/  :? for help
 Loading package ghc-prim ... linking ... done.
 Loading package integer-gmp ... linking ... done.
 Loading package base ... linking ... done.
-Prelude> True
-True
+
+Prelude> ()
+()
   
 ~~~
-
 
 </div>
 
@@ -71,19 +73,24 @@ True
 ~~~{.haskell}
 
 data Bool = True | False
-
-boolProgram :: Bool
--- "::" is pronounced, "has type"
   
 ~~~
 
-How many states could boolProgram inhabit?
-
 <div class="fragment">
+~~~{.haskell}
 
-1 + 1 = 2 
+boolProgram :: Bool
+boolProgram = --hidden
+  
+~~~
 
-> applause
+<div class="notes">
+
+"::" is pronounced "has type"
+
+</div>
+
+How many states can a program of type Bool be inhabited by?
 
 </div>
 
@@ -91,10 +98,41 @@ How many states could boolProgram inhabit?
 
 ~~~{.haskell}
 
+-- let's imagine haskell had type-level functions ... 
+inhabitants :: Type -> Nat
+
+inhabitants Bool = inhabitants True + inhabitants False
+inhabitants Bool = 1 + 1
+inhabitants Bool = 2
+  
+~~~
+
+</div>
+
+--------
+
+## Counting Higher
+
+How many states in a program does a value of type Int32 represent?
+
+~~~{.haskell}
+
 intProgram :: Int32
   
 ~~~
 
+<div class="fragment">
+
+~~~{.haskell}
+
+inhabitants Int32 = inhabitants -2147438648 
+                  + inhabitants -2147439647
+                  + ...
+                  + inhabitants 2147439647
+
+inhabitants Int32 = 2^32
+  
+~~~
 </div>
 
 <div class="fragment">
@@ -104,6 +142,8 @@ This one is just awful...
 ~~~{.haskell}
 
 strProgram :: String
+
+inhabitants String = ?????
   
 ~~~
 
@@ -111,23 +151,13 @@ strProgram :: String
 
 --------
 
-## Learn to Count
-
-~~~{.haskell}
-
--- if haskell had unsafe type-level pattern matching... 
-inhabitants :: Type -> Nat
-
-inhabitants Bool = 2
-inhabitants Int32 = 2^32
-  
-~~~
-
---------
-
 ## Learn to Add
 
 ~~~{.haskell}
+
+data Bool = True | False
+
+inhabitants Bool = 1 + 1
 
 -- Maybe there's one of these...
 data Maybe a = Just a | Nothing
@@ -141,7 +171,7 @@ inhabitants (Either a b) = inhabitants a + inhabitants b
   
 ~~~
 
-Bool, Maybe and Either are called sum types for the obvious reason.
+Bool, Maybe and Either are called "sum" types.
 
 --------
 
@@ -149,66 +179,54 @@ Bool, Maybe and Either are called sum types for the obvious reason.
 
 ~~~{.haskell}
 
-tuple :: (Bool, Int32)
+boolAndInt :: (Bool, Int32)
+
+inhabitants (Bool, Int32) = inhabitants Bool ??? inhabitants Int32
+
+                          = inhabitants Int32 -- if _1 == True
+                          + inhabitants Int32 -- if _1 == False
   
+                          = inhabitants Bool * inhabitants Int32
+
+                          = 2 * 2^32
+
+                          = 2^33
 ~~~
 
-* `fst :: (a, b) -> a`
-    - `(fst tuple)` has 2 inhabitants
-<br/><br/>
-* `snd :: (a, b) -> b`
-    - 2^32^ inhabitants if `(fst tuple) == True`
-    - 2^32^ inhabitants if `(fst tuple) == False`
-<br/><br/>
-* 2 * 2^32^ = 2^33^
-
-With tuples, we always multiply.
+Tuples (and objects) are called "product" types.
 
 --------
 
-## Learn to Multiply
+## Different Shapes, Same Implications
 
 ~~~{.haskell}
 
-inhabitants (a, b) = inhabitants a * inhabitants b
-inhabitants (Int32, Int32) = 2^32 * 2^32 = 2^64
+inhabitants (Bool, Int32)      = inhabitants Bool * inhabitants Int32
+                               = 2 * 2^32
+                               = 2^33 
 
-inhabitants (a, b, c) = inhabitants a * inhabitants b * inhabitants c
-inhabitants (Bool, Bool, Int32) = 2 * 2 * 2^32 = 2^34
+inhabitants Either Int32 Int32 = inhabitants Int32 + inhabitants Int32
+                               = 2^32 + 2^32
+                               = 2^33
   
 ~~~
 
-We call these "product" types.
-
---------
-
-## Isomorphic Types
-
-These types have the same inhabitants.
-
-~~~{.haskell}
-
--- expressed as a product
-tuple :: (Bool, Int32) -- 2^33 inhabitants
-
--- expressed as a sum
-either :: Either Int32 Int32 -- 2^33 inhabitants
-  
-~~~
-
-Choose whichever one is most convenient
+These types are *isomorphic*
 
 <div class="fragment">
-
 ~~~{.haskell}
 
-eitherBoolOrInt :: Either Bool Int32 -- 2 + 2^32 inhabitants
+toEither :: (Bool, a) -> Either a a
+toEither (True, a) = Right a
+toEither (False, a) = Right a
+
+fromEither :: Either a a -> (Bool, a)
+fromEither (Right a) = (True, a)
+fromEither (Left a)  = (False, a)
   
 ~~~
-
-Either is more flexible
-
 </div>
+
 
 ---------
 
@@ -216,12 +234,12 @@ Either is more flexible
 
 ~~~{.haskell}
 
-inhabitants (Either Bool Int32) = 2 + 2^32
+inhabitants Either Bool Int32 = inhabitants Bool + inhabitants Int32
+                              = 2 + 2^32
   
 ~~~
 
 Most languages emphasize products.
-<br/><br/>
 
 Bad ones don't let you define a type <br/>with 2 + 2^32^ inhabitants easily.
 
@@ -237,6 +255,88 @@ Too easy to define types with too many inhabitants.
 
 ---------
 
+## Haskell
+
+~~~{.haskell}
+
+Prelude> data Either a b = Left a | Right b
+
+Prelude> let printEither (Left b)  = putStrLn $ "It's a left: "  ++ show (not b)
+Prelude|     printEither (Right i) = putStrLn $ "It's a right: " ++ show (i + 1)
+Prelude| in  traverse printEither [Left True, Right 1, Left False, Right 2]
+
+It's a left: False
+It's a right: 2
+It's a left: True
+It's a right: 3
+[(),(),(),()]
+  
+~~~
+
+---------
+
+## Scala
+
+~~~{.scala}
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+sealed trait Either[A, B]
+case class Left[A, B](a: A) extends Either[A, B]
+case class Right[A, B](b: B) extends Either[A, B]
+
+// Exiting paste mode, now interpreting.
+
+scala> val xs : List[Either[Boolean, Int]] =
+     |   List(Left(true), Right(1), Left(false), Right(2))
+
+scala> xs foreach {
+     |   case Left(b)  => println(s"It's a left: ${!b}")
+     |   case Right(i) => println(s"It's a right: ${i + 1}")
+     | }
+It's a left: false
+It's a right: 2
+It's a left: true
+It's a right: 3
+  
+~~~
+
+--------
+
+## JavaScript
+~~~{.javascript}
+function left(a) {
+  return function(ifLeft, ifRight) { return ifLeft(a); };
+}
+
+function right(b) {
+  return function(ifLeft, ifRight) { return ifRight(b); };
+}
+~~~
+
+~~~{.javascript}
+var xs = [left(true), right(1), left(false), right(2)];
+
+for (i = 0; i < xs.length; i += 1) {
+  var eitherVal = xs[i]
+  eitherVal(
+    function(b) { console.log("It's a left: " + !b) },
+    function(i) { console.log("It's a right: " + (i + 1)) }
+  )
+}
+~~~
+
+~~~{.javascript}
+It's a left: false
+It's a right: 2
+It's a left: true
+It's a right: 3
+~~~
+
+--------
+
+## Java
 ~~~{.java}
 interface EitherVisitor<A, B, C> {
   public C visitLeft(Left<A, B> left);
@@ -249,9 +349,7 @@ interface Either<A, B> {
 
 public final class Left<A, B> implements Either<A, B> {
   public final A value;
-  public Left(A value) {
-    this.value = value;
-  }
+  public Left(A value) { this.value = value; }
 
   public <C> C accept(EitherVisitor<A, B, C> visitor) {
     return visitor.visitLeft(this);
@@ -260,14 +358,54 @@ public final class Left<A, B> implements Either<A, B> {
 
 public final class Right<A, B> implements Either<A, B> {
   public final B value;
-  public Right(B value) {
-    this.value = value;
-  }
+  public Right(B value) { this.value = value; }
 
   public <C> C accept(EitherVisitor<A, B, C> visitor) {
     return visitor.visitRight(this);
   }
 }
+~~~
+
+--------
+
+## Java
+~~~{.java}
+  public static void main(String[] argv) {
+    List<Either<Boolean, Integer>> xs = new ArrayList<>();
+    xs.add(new Left<Boolean, Integer>(true));
+    xs.add(new Right<Boolean, Integer>(1));
+    xs.add(new Left<Boolean, Integer>(false));
+    xs.add(new Right<Boolean, Integer>(2));
+
+    for (Either<Boolean, Integer> x : xs) {
+      x.accept(
+        new EitherVisitor<Boolean, Integer, Void>() {
+          public Void visitLeft(Left<Boolean, Integer> left) {
+            System.out.println("It's a left: " + (!left.value));
+            return null;
+          }
+
+          public Void visitRight(Right<Boolean, Integer> right) {
+            System.out.println("It's a right: " + (right.value + 1));
+            return null;
+          }
+        }
+      );
+    }
+  }
+~~~
+
+--------
+
+## Java
+~~~{.java}
+
+kris@heartland ~/personal/fsb_4-2014/src/main/java » java EitherJava
+It's a left: false
+It's a right: 2
+It's a left: true
+It's a right: 3
+  
 ~~~
 
 --------
@@ -282,7 +420,7 @@ public final class Right<A, B> implements Either<A, B> {
 
 ![](./img/bela-lugosi.jpg)
 
-> Don't let him in.
+> Don't invite errors into your program.
 
 <div class="notes">
 
@@ -294,7 +432,7 @@ What types should we not let in?
 
 --------
 
-# Strings (Ugh.)
+## Strings (Ugh.)
 
 > The type `String` should only ever appear in your program when a value is being shown to a human being.
 
@@ -380,9 +518,9 @@ This approach applies to virtually every primitive type.
 
 --------
 
-# Stake
+## Stake
 
-## import scalaz._
+**import scalaz._**
 
 Three very useful types:
 

@@ -5,5 +5,7 @@ reveal.html
 slidy.html
 .cabal-sandbox/
 cabal.sandbox.config
+dist
+*.class
 
 
